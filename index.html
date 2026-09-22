@@ -232,6 +232,26 @@
     margin: 22px auto 0;
   }
 
+  /* ---------- song section (no visible controls) ---------- */
+  .song-note {
+    text-align: center;
+    margin: 0 auto 40px;
+    font-family: 'Caveat', cursive;
+    font-size: 1.15rem;
+    color: var(--rose-deep);
+    opacity: 0.85;
+  }
+
+  .song-note span.title {
+    display: block;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: var(--plum-soft);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
   .entry {
     background: var(--paper);
     border: 1px solid var(--line);
@@ -319,6 +339,13 @@
       <div class="divider"></div>
     </div>
 
+    <!-- song section: no visible player, no slider/button, volume set as a percent in code -->
+    <div class="song-note">
+      now playing, quietly
+      <span class="title">harvey.mp3</span>
+    </div>
+    <audio id="bgMusic" src="harvey.mp3" loop preload="auto"></audio>
+
     <div class="entry">
       <span class="num">1 - Confused Phase</span>
       Day 1 lepas kita break i rasa macam kenapa tiba-tiba out of nowhere macam tu je. Lepas seminggu berlalu, i rasa setiap malam rindu tu still ada walau dah habiskan masa dgn member, main game, buat macam-macam nak busykan diri.
@@ -385,6 +412,11 @@
   const card = document.querySelector('.card');
   const unlockBtn = document.getElementById('unlockBtn');
 
+  // ---- song volume, set directly in code as a percent (no slider/button UI) ----
+  const SONG_VOLUME_PERCENT = 45; // change this number (0-100) to adjust volume
+  const bgMusic = document.getElementById('bgMusic');
+  bgMusic.volume = Math.min(100, Math.max(0, SONG_VOLUME_PERCENT)) / 100;
+
   function tryUnlock() {
     const val = pwdInput.value.trim().toUpperCase();
     if (val === PASSWORD) {
@@ -392,6 +424,10 @@
       lock.style.opacity = '0';
       lock.style.filter = 'blur(6px)';
       lock.style.pointerEvents = 'none';
+
+      // start the song quietly once the diary unlocks (the click counts as user interaction)
+      bgMusic.play().catch(() => {});
+
       setTimeout(() => {
         lock.style.display = 'none';
         diary.style.display = 'block';
